@@ -30,11 +30,6 @@
     </video>
   </section>
 
-  <!-- iOS: tap overlay so first play() runs in user gesture -->
-  <div class="video-tap-overlay hidden" id="videoTapOverlay" aria-hidden="true">
-    <span>Tap to start</span>
-  </div>
-
   <!-- WAVE OVERLAY -->
   <div class="wave-overlay" id="waveOverlay" aria-hidden="true">
     <canvas id="waveCanvas"></canvas>
@@ -114,12 +109,11 @@
 
 <script>
 /* =========================
-   iOS: autoplay muted videos; tap overlay if autoplay blocked
+   iOS: autoplay muted videos (no UI, no tap – playback on load only)
 ========================= */
 (function(){
   var bg = document.getElementById('bgVideo');
   var flowers = document.getElementById('flowersVideo');
-  var overlay = document.getElementById('videoTapOverlay');
   function tryPlay(el){
     if (!el) return;
     el.muted = true;
@@ -131,36 +125,6 @@
   function playVideos(){
     tryPlay(bg);
     tryPlay(flowers);
-    checkPlaying();
-  }
-  function hideOverlay(){
-    if (overlay) overlay.classList.add('hidden');
-  }
-  function showOverlay(){
-    if (overlay) overlay.classList.remove('hidden');
-  }
-  function checkPlaying(){
-    if (!overlay) return;
-    var both = (bg && !bg.paused) && (flowers && !flowers.paused);
-    if (both) hideOverlay();
-  }
-  function onUserGesture(){
-    playVideos();
-    hideOverlay();
-  }
-  if (bg){
-    bg.addEventListener('playing', checkPlaying, { passive: true });
-    bg.addEventListener('loadeddata', function(){ tryPlay(bg); checkPlaying(); }, { once: true });
-    bg.addEventListener('canplay', function(){ tryPlay(bg); checkPlaying(); }, { once: true });
-  }
-  if (flowers){
-    flowers.addEventListener('playing', checkPlaying, { passive: true });
-    flowers.addEventListener('loadeddata', function(){ tryPlay(flowers); checkPlaying(); }, { once: true });
-    flowers.addEventListener('canplay', function(){ tryPlay(flowers); checkPlaying(); }, { once: true });
-  }
-  if (overlay){
-    overlay.addEventListener('touchstart', function(e){ e.preventDefault(); onUserGesture(); }, { passive: false, once: true });
-    overlay.addEventListener('click', function(e){ e.preventDefault(); onUserGesture(); }, { once: true });
   }
   playVideos();
   if (document.readyState === 'loading')
@@ -168,10 +132,15 @@
   else
     playVideos();
   requestAnimationFrame(function(){ requestAnimationFrame(playVideos); });
-  document.addEventListener('touchstart', function(){ playVideos(); checkPlaying(); }, { once: true, passive: true });
-  document.addEventListener('click', function(){ playVideos(); checkPlaying(); }, { once: true, passive: true });
+  if (bg){
+    bg.addEventListener('loadeddata', function(){ tryPlay(bg); }, { once: true });
+    bg.addEventListener('canplay', function(){ tryPlay(bg); }, { once: true });
+  }
+  if (flowers){
+    flowers.addEventListener('loadeddata', function(){ tryPlay(flowers); }, { once: true });
+    flowers.addEventListener('canplay', function(){ tryPlay(flowers); }, { once: true });
+  }
   document.addEventListener('visibilitychange', function(){ if (!document.hidden) playVideos(); });
-  setTimeout(function(){ if (bg && bg.paused && flowers && flowers.paused) showOverlay(); }, 600);
 })();
 
 /* ============================================================
