@@ -53,29 +53,22 @@ body{
 }
 
 /* =========================
-   WAVES + PLAY (in flow between flowers and envelope)
+   WAVES + PLAY
 ========================= */
 :root{
+  --wave-y: 52vh;
   --wave-h: clamp(72px, 12vh, 140px);
   --play-size: clamp(42px, 6vw, 54px);
-}
-
-.wave-section{
-  position:relative;
-  min-height: var(--wave-h);
-  height: clamp(100px, 16vh, 180px);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  z-index:1;
+  --wave-lift: 20px;
 }
 
 .wave-overlay{
-  position:absolute;
+  position:fixed;
   left:0; right:0;
-  top:50%;
+  top:var(--wave-y);
   transform:translateY(-50%);
   height:var(--wave-h);
+  z-index:1;
   pointer-events:none;
   opacity:0;
   transition:opacity .35s ease;
@@ -89,10 +82,11 @@ body{
 }
 
 .wave-play{
-  position:absolute;
+  position:fixed;
   left:50%;
-  top:50%;
+  top:var(--wave-y);
   transform:translate(-50%, calc(-50% + 16px));
+  z-index:1;
   width:var(--play-size, 44px);
   height:var(--play-size, 44px);
   border-radius:50%;
@@ -107,7 +101,7 @@ body{
     0 0 8px rgba(70,235,255,0.1),
     inset 0 0 2px rgba(70,235,255,0.06);
   transition:transform .25s ease, opacity .25s ease;
-  will-change: transform, opacity;
+  will-change: transform, opacity; /* ✅ smoother on mobile */
 }
 
 .wave-play.hidden{
@@ -539,7 +533,8 @@ background: radial-gradient(circle at center,
    TABLET FIX
 ========================= */
 @media (min-width: 801px) and (max-width: 1024px){
-  .wave-play{ transform: translate(-50%, calc(-50% - 16px)); }
+  .wave-overlay{ transform: translateY(calc(-50% - 36px)); }
+  .wave-play{ transform: translate(-50%, calc(-50% - 32px + 16px)); }
   .envelope-section{ margin-top: 4vh; }
 }
 
@@ -556,7 +551,6 @@ background: radial-gradient(circle at center,
     border-radius: 22px;
   }
 
-  .wave-section{ height: clamp(90px, 14vh, 140px); }
   .wave-overlay{ height:110px; }
   .wave-play{ transform: translate(-50%, calc(-50% + 5px)); }
 
@@ -571,6 +565,8 @@ background: radial-gradient(circle at center,
   }
   .envelope{ width:260px; height:170px; }
 }
+
+
 
 
 
