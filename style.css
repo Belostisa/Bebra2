@@ -53,22 +53,29 @@ body{
 }
 
 /* =========================
-   WAVES + PLAY
+   WAVES + PLAY (in flow between flowers and envelope)
 ========================= */
 :root{
-  --wave-y: 52vh;
   --wave-h: clamp(72px, 12vh, 140px);
   --play-size: clamp(42px, 6vw, 54px);
-  --wave-lift: 20px;
+}
+
+.wave-section{
+  position:relative;
+  min-height: var(--wave-h);
+  height: clamp(100px, 16vh, 180px);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:1;
 }
 
 .wave-overlay{
-  position:fixed;
+  position:absolute;
   left:0; right:0;
-  top:var(--wave-y);
+  top:50%;
   transform:translateY(-50%);
   height:var(--wave-h);
-  z-index:1;
   pointer-events:none;
   opacity:0;
   transition:opacity .35s ease;
@@ -82,11 +89,10 @@ body{
 }
 
 .wave-play{
-  position:fixed;
+  position:absolute;
   left:50%;
-  top:var(--wave-y);
+  top:50%;
   transform:translate(-50%, calc(-50% + 16px));
-  z-index:1;
   width:var(--play-size, 44px);
   height:var(--play-size, 44px);
   border-radius:50%;
@@ -101,7 +107,7 @@ body{
     0 0 8px rgba(70,235,255,0.1),
     inset 0 0 2px rgba(70,235,255,0.06);
   transition:transform .25s ease, opacity .25s ease;
-  will-change: transform, opacity; /* ✅ smoother on mobile */
+  will-change: transform, opacity;
 }
 
 .wave-play.hidden{
@@ -533,8 +539,7 @@ background: radial-gradient(circle at center,
    TABLET FIX
 ========================= */
 @media (min-width: 801px) and (max-width: 1024px){
-  .wave-overlay{ transform: translateY(calc(-50% - 36px)); }
-  .wave-play{ transform: translate(-50%, calc(-50% - 32px + 16px)); }
+  .wave-play{ transform: translate(-50%, calc(-50% - 16px)); }
   .envelope-section{ margin-top: 4vh; }
 }
 
@@ -542,15 +547,6 @@ background: radial-gradient(circle at center,
    MOBILE
 ========================= */
 @media (max-width: 600px){
-  /* No scroll: play button stays between flowers and envelope, no jumping */
-  html, body{
-    height: 100%;
-    min-height: 100dvh;
-    overflow: hidden;
-    overflow-x: hidden;
-    -webkit-overflow-scrolling: auto;
-  }
-
   .crt{ opacity:0.40; }
 
   /* ✅ stronger curvature on mobile */
@@ -560,6 +556,7 @@ background: radial-gradient(circle at center,
     border-radius: 22px;
   }
 
+  .wave-section{ height: clamp(90px, 14vh, 140px); }
   .wave-overlay{ height:110px; }
   .wave-play{ transform: translate(-50%, calc(-50% + 5px)); }
 
