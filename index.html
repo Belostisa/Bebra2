@@ -30,13 +30,13 @@
     </video>
   </section>
 
-  <!-- WAVE + PLAY (scrolls with page between flowers and envelope) -->
-  <section class="wave-section">
-    <div class="wave-overlay" id="waveOverlay" aria-hidden="true">
-      <canvas id="waveCanvas"></canvas>
-    </div>
-    <button class="wave-play" id="playWave" aria-label="Play">▶</button>
-  </section>
+  <!-- WAVE OVERLAY -->
+  <div class="wave-overlay" id="waveOverlay" aria-hidden="true">
+    <canvas id="waveCanvas"></canvas>
+  </div>
+
+  <!-- SINGLE PLAY BUTTON -->
+  <button class="wave-play" id="playWave" aria-label="Play">▶</button>
 
   <!-- ENVELOPE -->
   <section class="envelope-section">
@@ -613,7 +613,21 @@ function resizeWaveCanvas(){
 }
 
 function updateWavePosition(){
-  /* Wave + play button are in document flow (wave-section), no viewport positioning */
+  if (!flowersSection || !envelopeEl) return;
+
+  const f = flowersSection.getBoundingClientRect();
+  const e = envelopeEl.getBoundingClientRect();
+
+  let y = (f.bottom + e.top) / 2;
+  y -= Math.min(28, innerHeight * 0.035);
+
+  const overlayH = overlay?.getBoundingClientRect().height || 120;
+  y -= overlayH / 2;
+
+  const pad = Math.max(48, Math.min(96, innerHeight * 0.08));
+  y = clamp(y, pad, innerHeight - pad);
+
+  document.documentElement.style.setProperty("--wave-y", `${y}px`);
 }
 
 function scheduleLayoutUpdate(){
@@ -1045,18 +1059,6 @@ document.addEventListener("visibilitychange", () => {
 
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
