@@ -12,24 +12,19 @@
 
 <body>
 
-  <!-- FULL BACKGROUND VIDEO -->
-  <div class="bg-video">
-    <video autoplay muted loop playsinline webkit-playsinline preload="auto" id="bgVideo" disablePictureInPicture disableRemotePlayback>
-      <source src="media/bg.mp4" type="video/mp4">
-    </video>
-  </div>
+  <!-- FULL BACKGROUND VIDEO (injected by script for iOS autoplay) -->
+  <div class="bg-video" id="bgVideoContainer"></div>
 
   <!-- AUDIO (loop is fine; we will handle end/stop too) -->
   <audio id="bgAudio" loop preload="auto" crossorigin="anonymous">
     <source src="media/sextape.mp3" type="audio/mpeg">
   </audio>
 
-  <!-- FLOWERS -->
-  <section class="flowers-section">
-    <video autoplay muted loop playsinline webkit-playsinline preload="auto" class="flowers-video" id="flowersVideo" disablePictureInPicture disableRemotePlayback>
-      <source src="media/flowers2.mp4" type="video/mp4">
-    </video>
-  </section>
+  <!-- FLOWERS (video injected by script for iOS autoplay) -->
+  <section class="flowers-section" id="flowersVideoContainer"></section>
+
+  <!-- Invisible overlay: first tap starts videos when iOS blocks autoplay; disappears when both playing -->
+  <div id="videoFirstTap" class="video-first-tap" aria-hidden="true"></div>
 
   <!-- WAVE OVERLAY -->
   <div class="wave-overlay" id="waveOverlay" aria-hidden="true">
@@ -109,49 +104,66 @@
   </div>
 
 <script>
-/* iOS: start muted inline videos on load; hide native play UI; try bg then flowers */
+/* iOS: create videos in JS with muted/playsInline set before load, then play */
 (function(){
-  var bg = document.getElementById("bgVideo");
-  var flowers = document.getElementById("flowersVideo");
-  function prepare(el){
-    if (!el) return;
-    el.muted = true;
-    el.setAttribute("muted", "");
-    el.playsInline = true;
-    el.setAttribute("playsinline", "");
-    el.setAttribute("webkit-playsinline", "");
+  var bgContainer = document.getElementById("bgVideoContainer");
+  var flowersContainer = document.getElementById("flowersVideoContainer");
+  if (!bgContainer || !flowersContainer) return;
+
+  function makeVideo(id, className, src){
+    var v = document.createElement("video");
+    v.id = id;
+    if (className) v.className = className;
+    v.setAttribute("muted", "");
+    v.setAttribute("playsinline", "");
+    v.setAttribute("webkit-playsinline", "");
+    v.muted = true;
+    v.playsInline = true;
+    v.autoplay = true;
+    v.loop = true;
+    v.preload = "auto";
+    v.playsInline = true;
+    var s = document.createElement("source");
+    s.src = src;
+    s.type = "video/mp4";
+    v.appendChild(s);
+    return v;
   }
-  function tryPlay(el){
-    if (!el) return;
-    prepare(el);
-    el.play().catch(function(){});
-  }
-  prepare(bg);
-  prepare(flowers);
-  function startBg(){ tryPlay(bg); }
-  function startFlowers(){ tryPlay(flowers); }
-  function go(){
-    startBg();
-    startFlowers();
-  }
+
+  var bg = makeVideo("bgVideo", null, "media/bg.mp4");
+  var flowers = makeVideo("flowersVideo", "flowers-video", "media/flowers2.mp4");
+  bgContainer.appendChild(bg);
+  flowersContainer.appendChild(flowers);
+
+  function tryPlay(el){ if (el) el.play().catch(function(){}); }
+  function go(){ tryPlay(bg); tryPlay(flowers); }
+
   go();
+  bg.addEventListener("loadeddata", function(){ tryPlay(bg); }, { once: true });
+  bg.addEventListener("canplay", function(){ tryPlay(bg); }, { once: true });
+  flowers.addEventListener("loadeddata", function(){ tryPlay(flowers); }, { once: true });
+  flowers.addEventListener("canplay", function(){ tryPlay(flowers); }, { once: true });
   if (document.readyState === "loading")
     document.addEventListener("DOMContentLoaded", go);
   else
     go();
   requestAnimationFrame(function(){ requestAnimationFrame(go); });
-  if (bg){
-    bg.addEventListener("loadeddata", startBg, { once: true });
-    bg.addEventListener("canplay", startBg, { once: true });
-    bg.addEventListener("playing", function(){ startFlowers(); }, { passive: true });
-  }
-  if (flowers){
-    flowers.addEventListener("loadeddata", startFlowers, { once: true });
-    flowers.addEventListener("canplay", startFlowers, { once: true });
-  }
   document.addEventListener("visibilitychange", function(){ if (!document.hidden) go(); });
-  setTimeout(go, 100);
-  setTimeout(go, 500);
+  setTimeout(go, 50);
+  setTimeout(go, 200);
+  setTimeout(go, 600);
+
+  var tapLayer = document.getElementById("videoFirstTap");
+  if (tapLayer){
+    function disableTapLayer(){ tapLayer.style.pointerEvents = "none"; }
+    function bothPlaying(){ return bg && !bg.paused && flowers && !flowers.paused; }
+    function checkDisable(){ if (bothPlaying()) disableTapLayer(); }
+    bg.addEventListener("playing", checkDisable, { passive: true });
+    flowers.addEventListener("playing", checkDisable, { passive: true });
+    tapLayer.addEventListener("touchstart", function(e){ tryPlay(bg); tryPlay(flowers); disableTapLayer(); }, { passive: true, once: true });
+    tapLayer.addEventListener("click", function(e){ tryPlay(bg); tryPlay(flowers); disableTapLayer(); }, { once: true });
+    setTimeout(checkDisable, 800);
+  }
 })();
 
 /* ============================================================
@@ -1070,6 +1082,7 @@ document.addEventListener("visibilitychange", () => {
 
 </body>
 </html>
+
 
 
 
