@@ -52,6 +52,14 @@ body{
   height: 0;
 }
 
+/* Invisible overlay: first tap starts videos on iOS when autoplay blocked; no text, no button */
+.video-first-tap{
+  position: fixed;
+  inset: 0;
+  z-index: 5000;
+  pointer-events: auto;
+}
+
 /* =========================
    FLOWERS
 ========================= */
@@ -583,8 +591,3 @@ background:radial-gradient(circle at center,
   }
   .envelope{ width:260px; height:170px; }
 }
-
-
-
-
-
