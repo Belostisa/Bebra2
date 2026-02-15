@@ -477,7 +477,7 @@ body{
   to{ transform:scale(1); }
 }
 
-background: radial-gradient(circle at center,
+background:radial-gradient(circle at center,
     rgba(0,0,0,0.15) 0%,
     rgba(0,0,0,0.60) 60%,
     rgba(0,0,0,0.85) 100%
@@ -565,27 +565,6 @@ background: radial-gradient(circle at center,
   }
   .envelope{ width:260px; height:170px; }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
