@@ -34,30 +34,27 @@ body{
   opacity:0.9;
 }
 
-/* Hide iOS Safari native play overlay on video (muted inline should autoplay) */
+/* Hide iOS Safari native play overlay; no controls chrome on muted inline videos */
 .bg-video video,
 .flowers-video{
   -webkit-appearance: none;
   appearance: none;
-}
-.bg-video video::-webkit-media-controls-start-playback-button,
-.bg-video video::-webkit-media-controls-overlay-play-button,
-.flowers-video::-webkit-media-controls-start-playback-button,
-.flowers-video::-webkit-media-controls-overlay-play-button{
-  display: none !important;
-  opacity: 0;
   pointer-events: none;
-  -webkit-appearance: none;
-  width: 0;
-  height: 0;
 }
-
-/* Invisible overlay: first tap starts videos on iOS when autoplay blocked; no text, no button */
-.video-first-tap{
-  position: fixed;
-  inset: 0;
-  z-index: 5000;
-  pointer-events: auto;
+.flowers-video::-webkit-media-controls,
+.flowers-video::-webkit-media-controls-enclosure,
+.flowers-video::-webkit-media-controls-panel,
+.flowers-video::-webkit-media-controls-start-playback-button,
+.flowers-video::-webkit-media-controls-overlay-play-button,
+.bg-video video::-webkit-media-controls-start-playback-button,
+.bg-video video::-webkit-media-controls-overlay-play-button{
+  display: none !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  -webkit-appearance: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  visibility: hidden !important;
 }
 
 /* =========================
