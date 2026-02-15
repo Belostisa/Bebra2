@@ -7,7 +7,6 @@
 
   <link rel="stylesheet" href="style.css" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <!-- Ask the browser to allow muted autoplay for this origin (can help Safari) -->
   <meta http-equiv="Permissions-Policy" content="autoplay=(self)">
 </head>
 
@@ -110,39 +109,37 @@
   </div>
 
 <script>
-/* =========================
-   iOS: start muted inline videos on load (no UI, no tap)
-========================= */
+/* iOS: start muted inline videos on load (no UI) */
 (function(){
-  var bg = document.getElementById('bgVideo');
-  var flowers = document.getElementById('flowersVideo');
+  var bg = document.getElementById("bgVideo");
+  var flowers = document.getElementById("flowersVideo");
   function tryPlay(el){
     if (!el) return;
     el.muted = true;
-    el.setAttribute('muted', '');
+    el.setAttribute("muted", "");
     el.playsInline = true;
-    el.setAttribute('playsinline', '');
+    el.setAttribute("playsinline", "");
     el.play().catch(function(){});
   }
-  function playVideos(){
+  function go(){
     tryPlay(bg);
     tryPlay(flowers);
   }
-  playVideos();
-  if (document.readyState === 'loading')
-    document.addEventListener('DOMContentLoaded', playVideos);
+  go();
+  if (document.readyState === "loading")
+    document.addEventListener("DOMContentLoaded", go);
   else
-    playVideos();
-  requestAnimationFrame(function(){ requestAnimationFrame(playVideos); });
+    go();
+  requestAnimationFrame(function(){ requestAnimationFrame(go); });
   if (bg){
-    bg.addEventListener('loadeddata', function(){ tryPlay(bg); }, { once: true });
-    bg.addEventListener('canplay', function(){ tryPlay(bg); }, { once: true });
+    bg.addEventListener("loadeddata", function(){ tryPlay(bg); }, { once: true });
+    bg.addEventListener("canplay", function(){ tryPlay(bg); }, { once: true });
   }
   if (flowers){
-    flowers.addEventListener('loadeddata', function(){ tryPlay(flowers); }, { once: true });
-    flowers.addEventListener('canplay', function(){ tryPlay(flowers); }, { once: true });
+    flowers.addEventListener("loadeddata", function(){ tryPlay(flowers); }, { once: true });
+    flowers.addEventListener("canplay", function(){ tryPlay(flowers); }, { once: true });
   }
-  document.addEventListener('visibilitychange', function(){ if (!document.hidden) playVideos(); });
+  document.addEventListener("visibilitychange", function(){ if (!document.hidden) go(); });
 })();
 
 /* ============================================================
