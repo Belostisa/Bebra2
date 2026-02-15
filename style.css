@@ -34,6 +34,24 @@ body{
   opacity:0.9;
 }
 
+/* Hide iOS Safari native play overlay on video (muted inline should autoplay) */
+.bg-video video,
+.flowers-video{
+  -webkit-appearance: none;
+  appearance: none;
+}
+.bg-video video::-webkit-media-controls-start-playback-button,
+.bg-video video::-webkit-media-controls-overlay-play-button,
+.flowers-video::-webkit-media-controls-start-playback-button,
+.flowers-video::-webkit-media-controls-overlay-play-button{
+  display: none !important;
+  opacity: 0;
+  pointer-events: none;
+  -webkit-appearance: none;
+  width: 0;
+  height: 0;
+}
+
 /* =========================
    FLOWERS
 ========================= */
@@ -565,38 +583,6 @@ background:radial-gradient(circle at center,
   }
   .envelope{ width:260px; height:170px; }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
