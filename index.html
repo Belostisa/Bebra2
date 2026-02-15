@@ -14,7 +14,7 @@
 
   <!-- FULL BACKGROUND VIDEO -->
   <div class="bg-video">
-    <video autoplay muted loop playsinline webkit-playsinline preload="auto" id="bgVideo">
+    <video autoplay muted loop playsinline webkit-playsinline preload="auto" id="bgVideo" disablePictureInPicture disableRemotePlayback>
       <source src="media/bg.mp4" type="video/mp4">
     </video>
   </div>
@@ -26,7 +26,7 @@
 
   <!-- FLOWERS -->
   <section class="flowers-section">
-    <video autoplay muted loop playsinline webkit-playsinline preload="auto" class="flowers-video" id="flowersVideo">
+    <video autoplay muted loop playsinline webkit-playsinline preload="auto" class="flowers-video" id="flowersVideo" disablePictureInPicture disableRemotePlayback>
       <source src="media/flowers2.mp4" type="video/mp4">
     </video>
   </section>
@@ -109,21 +109,30 @@
   </div>
 
 <script>
-/* iOS: start muted inline videos on load (no UI) */
+/* iOS: start muted inline videos on load; hide native play UI; try bg then flowers */
 (function(){
   var bg = document.getElementById("bgVideo");
   var flowers = document.getElementById("flowersVideo");
-  function tryPlay(el){
+  function prepare(el){
     if (!el) return;
     el.muted = true;
     el.setAttribute("muted", "");
     el.playsInline = true;
     el.setAttribute("playsinline", "");
+    el.setAttribute("webkit-playsinline", "");
+  }
+  function tryPlay(el){
+    if (!el) return;
+    prepare(el);
     el.play().catch(function(){});
   }
+  prepare(bg);
+  prepare(flowers);
+  function startBg(){ tryPlay(bg); }
+  function startFlowers(){ tryPlay(flowers); }
   function go(){
-    tryPlay(bg);
-    tryPlay(flowers);
+    startBg();
+    startFlowers();
   }
   go();
   if (document.readyState === "loading")
@@ -132,14 +141,17 @@
     go();
   requestAnimationFrame(function(){ requestAnimationFrame(go); });
   if (bg){
-    bg.addEventListener("loadeddata", function(){ tryPlay(bg); }, { once: true });
-    bg.addEventListener("canplay", function(){ tryPlay(bg); }, { once: true });
+    bg.addEventListener("loadeddata", startBg, { once: true });
+    bg.addEventListener("canplay", startBg, { once: true });
+    bg.addEventListener("playing", function(){ startFlowers(); }, { passive: true });
   }
   if (flowers){
-    flowers.addEventListener("loadeddata", function(){ tryPlay(flowers); }, { once: true });
-    flowers.addEventListener("canplay", function(){ tryPlay(flowers); }, { once: true });
+    flowers.addEventListener("loadeddata", startFlowers, { once: true });
+    flowers.addEventListener("canplay", startFlowers, { once: true });
   }
   document.addEventListener("visibilitychange", function(){ if (!document.hidden) go(); });
+  setTimeout(go, 100);
+  setTimeout(go, 500);
 })();
 
 /* ============================================================
