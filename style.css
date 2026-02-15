@@ -67,8 +67,24 @@ body{
   align-items:center;
   pointer-events:none;
 }
-.flowers-video{
+.flowers-video-wrap{
+  position:relative;
+  display:flex;
+  justify-content:center;
+  align-items:center;
   width:min(70vw, 900px);
+}
+.flowers-video-wrap::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:1;
+  pointer-events:none;
+  background:transparent;
+}
+.flowers-video{
+  width:100%;
+  max-width:min(70vw, 900px);
   display:block;
   mix-blend-mode:screen;
   opacity:0.9;
@@ -588,3 +604,4 @@ background:radial-gradient(circle at center,
   }
   .envelope{ width:260px; height:170px; }
 }
+
